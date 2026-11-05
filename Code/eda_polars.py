@@ -21,29 +21,17 @@ print(data['Year'].value_counts())
 data = data.with_columns(
     pl.col("Estimated Cost") * 1_000_000,
     pl.col("TV Viewers") * 1_000_000,
+    pl.when(pl.col("Brand").str.starts_with("Bud"))
+    .then(pl.lit("Alcoholic Beverages"))
+    .when(pl.col("Brand").str.contains_any(car_companies))
+    .then(pl.lit("Car"))
+    .otherwise(pl.lit("Junk Food"))
+    .alias("Industry")
 )
 
-alcoholic_data = (
-    data
-    .filter(pl.col("Brand").str.starts_with("Bud"))
-)
+data.write_csv("Data/cleaned_superbowl_commercials.csv")
 
-car_data = (
-    data
-    .filter(pl.col("Brand").str.contains_any(car_companies))
-)
-
-junk_food_data = (
-    data
-    .filter(pl.col("Brand").str.contains_any(junk_food_companies))
-)
+cleaned_data = pl.read_csv("Data/cleaned_superbowl_commercials.csv")
 
 #displays first five rows of dataframe
-print("--- Alcoholic Beverage Companies ---")
-print(alcoholic_data.head())
-
-print("--- Car Companies ---")
-print(car_data.head())
-
-print("--- Junk Food Companies ---")
-print(junk_food_data.head())
+print(cleaned_data.head())
