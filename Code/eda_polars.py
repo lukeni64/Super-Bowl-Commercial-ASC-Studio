@@ -25,7 +25,9 @@ data = data.with_columns(
     .then(pl.lit("Alcoholic Beverages"))
     .when(pl.col("Brand").str.contains_any(car_companies))
     .then(pl.lit("Car"))
-    .otherwise(pl.lit("Junk Food"))
+    .when(pl.col("Brand").str.contains_any(junk_food_companies))
+    .then(pl.lit("Junk Food"))
+    .otherwise(pl.lit("N/A"))
     .alias("Industry")
 )
 
